@@ -4,7 +4,7 @@ import com.mercadolivro.controller.request.PostCustomerRequest
 import com.mercadolivro.controller.request.PutCustomerRequest
 import com.mercadolivro.model.CustomerModel
 import com.mercadolivro.service.CustomerService
-import com.mercadolivro.toCustomerModel
+import com.mercadolivro.extension.toCustomerModel
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 

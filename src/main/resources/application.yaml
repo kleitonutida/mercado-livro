@@ -2,7 +2,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
   datasource:
-    url: jdbc:mysql://localhost:3306/mercadolivro
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/mercadolivro?createDatabaseIfNotExist=true
     username: root
     password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver

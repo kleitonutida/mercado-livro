@@ -1,4 +1,4 @@
-package com.mercadolivro
+package com.mercadolivro.extension
 
 import com.mercadolivro.controller.request.PostCustomerRequest
 import com.mercadolivro.controller.request.PutCustomerRequest
