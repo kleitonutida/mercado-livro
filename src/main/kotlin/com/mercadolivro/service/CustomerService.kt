@@ -1,5 +1,6 @@
 package com.mercadolivro.service
 
+import com.mercadolivro.enums.CustomerStatus
 import com.mercadolivro.model.CustomerModel
 import com.mercadolivro.repository.BookRepository
 import com.mercadolivro.repository.CustomerRepository
@@ -37,6 +38,7 @@ class CustomerService(
     fun delete(id: Int) {
         val customer = findById(id)
         bookService.deleteByCustomer(customer)
-        customerRepository.deleteById(id)
+        customer.status = CustomerStatus.INATIVO
+        update(customer)
     }
 }
