@@ -2,10 +2,10 @@ package com.mercadolivro.service
 
 import com.mercadolivro.enums.CustomerStatus
 import com.mercadolivro.model.CustomerModel
-import com.mercadolivro.repository.BookRepository
 import com.mercadolivro.repository.CustomerRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.lang.Exception
 
 @Service
 class CustomerService(
@@ -13,11 +13,11 @@ class CustomerService(
     val bookService: BookService,
 ) {
 
-    fun getAll(name: String?): List<CustomerModel> {
+    fun getAll(pageable: Pageable, name: String?): Page<CustomerModel> {
         name?.let {
-            return customerRepository.findByNameContaining(it)
+            return customerRepository.findByNameContaining(pageable = pageable, name = it)
         }
-        return customerRepository.findAll().toList()
+        return customerRepository.findAll(pageable)
     }
 
     fun findById(id: Int): CustomerModel {
@@ -29,7 +29,7 @@ class CustomerService(
     }
 
     fun update(customer: CustomerModel) {
-        if (!customerRepository.existsById(customer.id!!)){
+        if (!customerRepository.existsById(customer.id!!)) {
             throw Exception()
         }
         customerRepository.save(customer)
