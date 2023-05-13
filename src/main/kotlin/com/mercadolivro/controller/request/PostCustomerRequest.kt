@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotEmpty
 
 data class PostCustomerRequest(
 
-    @field:NotEmpty(message = "Nome deve ser informado!")
+    @field:NotEmpty(message = "{customer.name.not_empty}")
     val name: String,
 
-    @field:Email(message = "E-mail deve ser válido!")
-    @EmailAvailable
+    @field:Email(message = "{customer.email.is_valid}")
+    @EmailAvailable(message = "{customer.email.not_available}")
     val email: String,
 )

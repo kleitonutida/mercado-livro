@@ -8,11 +8,11 @@ import java.math.BigDecimal
 
 data class PostBookRequest(
 
-    @field:NotEmpty(message = "Nome deve ser informado!")
+    @field:NotEmpty(message = "{book.name.not_empty}")
     var name: String,
 
-    @field:NotNull(message = "Preço deve ser informado!")
-    @field:Min(value = 1, message = "O valor não pode ser menor ou igual a zero.")
+    @field:NotNull(message = "{book.price.not_null}")
+    @field:Min(value = 1, message = "{book.price.value_min}")
     var price: BigDecimal,
 
     @JsonAlias("customer_id")
