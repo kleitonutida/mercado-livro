@@ -11,3 +11,16 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     default-property-inclusion: NON_NULL
+# DOC - https://springdoc.org/v2/#migrating-from-springfox
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  # Pacotes que serão escaneados
+  packages-to-scan:
+    - com.mercadolivro.controller
+  # Quais os caminhos que serão adicionados no swagger-ui
+  paths-to-match:
+    - /books/**
+    - /customers/**
