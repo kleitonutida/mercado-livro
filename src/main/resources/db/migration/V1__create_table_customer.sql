@@ -1,5 +1,5 @@
 CREATE TABLE customer(
-    id int auto_increment primary key,
-    name varchar(255) not null,
-    email varchar(255) not null unique
+    id INT auto_increment PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE
 )
