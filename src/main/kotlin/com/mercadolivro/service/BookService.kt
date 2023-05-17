@@ -52,4 +52,10 @@ class BookService(
         books.map { it.status = BookStatus.VENDIDO }
         bookRepository.saveAll(books)
     }
+
+    fun booksAvailable(bookIds: Set<Int>): Boolean {
+        val books = findAllByIds(bookIds)
+        val booksNotAvailable = books.filter { it.status !== BookStatus.ATIVO }.toSet()
+        return booksNotAvailable.isEmpty()
+    }
 }
