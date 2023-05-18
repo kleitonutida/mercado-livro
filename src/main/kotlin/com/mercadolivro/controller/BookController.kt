@@ -3,6 +3,7 @@ package com.mercadolivro.controller
 import com.mercadolivro.controller.request.PostBookRequest
 import com.mercadolivro.controller.request.PutBookRequest
 import com.mercadolivro.controller.response.BookResponse
+import com.mercadolivro.enums.BookStatus
 import com.mercadolivro.extension.toBookModel
 import com.mercadolivro.extension.toResponse
 import com.mercadolivro.service.BookService
@@ -23,7 +24,10 @@ class BookController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody @Valid request: PostBookRequest) {
+    fun create(
+        @RequestBody @Valid
+        request: PostBookRequest,
+    ) {
         val customer = customerService.findById(request.customerId)
         bookService.create(request.toBookModel(customer))
     }
@@ -56,12 +60,18 @@ class BookController(
     }
 
     @GetMapping("/customer/{id}")
-    fun getCustomerBooks(@PageableDefault(page = 0, size = 10) pageable: Pageable, @PathVariable id: Int): Page<BookResponse> {
-        return bookService.findByCustomerId(id, pageable).map { it.toResponse() }
-    }
+    fun getCustomerBooks(
+        @PageableDefault(page = 0, size = 10) pageable: Pageable,
+        @PathVariable id: Int,
+    ): Page<BookResponse> =
+        bookService.findByCustomerId(id, pageable).map { it.toResponse() }
 
     @GetMapping("/customer/{id}/{status}")
-    fun getCustomerBooksByStatus(@PathVariable id:Int, @PathVariable status: String) {
-
-    }
+    fun getCustomerBooksByStatus(
+        @PageableDefault(page = 0, size = 10) pageable: Pageable,
+        @PathVariable id: Int,
+        @PathVariable
+        status: BookStatus,
+    ): Page<BookResponse> =
+        bookService.findByCustomerIdAndBookStatus(pageable, id, status).map { it.toResponse() }
 }

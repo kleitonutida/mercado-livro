@@ -66,4 +66,10 @@ class BookService(
             .orElseThrow { NotFoundException(Errors.ML201.message.format(id), Errors.ML201.code) }
         return bookRepository.findByCustomer(customer, pageable)
     }
+
+    fun findByCustomerIdAndBookStatus(pageable: Pageable, id: Int, status: BookStatus): Page<BookModel> {
+        val customer = customerRepository.findById(id)
+            .orElseThrow { NotFoundException(Errors.ML201.message.format(id), Errors.ML201.code) }
+        return bookRepository.findByCustomerAndStatus(customer, status, pageable)
+    }
 }

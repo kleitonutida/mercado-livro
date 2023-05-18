@@ -35,6 +35,17 @@ class ControllerAdvice {
         return ResponseEntity(error, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(BookStatusInvalidException::class)
+    fun handlerBookStatusInvalidException(ex: BookStatusInvalidException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val error = ErrorResponse(
+            httpCode = HttpStatus.BAD_REQUEST.value(),
+            message = ex.message,
+            internalCode = ex.errorCode,
+            null,
+        )
+        return ResponseEntity(error, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handlerMethodArgumentNotValidException(
         ex: MethodArgumentNotValidException,
