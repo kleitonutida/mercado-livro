@@ -54,4 +54,14 @@ class BookController(
         val bookSaved = bookService.findById(id)
         bookService.update(book.toBookModel(bookSaved))
     }
+
+    @GetMapping("/customer/{id}")
+    fun getCustomerBooks(@PageableDefault(page = 0, size = 10) pageable: Pageable, @PathVariable id: Int): Page<BookResponse> {
+        return bookService.findByCustomerId(id, pageable).map { it.toResponse() }
+    }
+
+    @GetMapping("/customer/{id}/{status}")
+    fun getCustomerBooksByStatus(@PathVariable id:Int, @PathVariable status: String) {
+
+    }
 }

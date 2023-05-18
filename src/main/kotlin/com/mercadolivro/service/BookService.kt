@@ -6,12 +6,14 @@ import com.mercadolivro.exception.NotFoundException
 import com.mercadolivro.model.BookModel
 import com.mercadolivro.model.CustomerModel
 import com.mercadolivro.repository.BookRepository
+import com.mercadolivro.repository.CustomerRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
 class BookService(
+    val customerRepository: CustomerRepository,
     val bookRepository: BookRepository,
 ) {
     fun create(book: BookModel) =
@@ -57,5 +59,11 @@ class BookService(
         val books = findAllByIds(bookIds)
         val booksNotAvailable = books.filter { it.status !== BookStatus.ATIVO }.toSet()
         return booksNotAvailable.isEmpty()
+    }
+
+    fun findByCustomerId(id: Int, pageable: Pageable): Page<BookModel> {
+        val customer = customerRepository.findById(id)
+            .orElseThrow { NotFoundException(Errors.ML201.message.format(id), Errors.ML201.code) }
+        return bookRepository.findByCustomer(customer, pageable)
     }
 }
