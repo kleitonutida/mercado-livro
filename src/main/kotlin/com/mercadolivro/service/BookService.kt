@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class BookService(
-    val customerRepository: CustomerRepository,
-    val bookRepository: BookRepository,
+    private val customerRepository: CustomerRepository,
+    private val bookRepository: BookRepository,
 ) {
     fun create(book: BookModel) =
         bookRepository.save(book)

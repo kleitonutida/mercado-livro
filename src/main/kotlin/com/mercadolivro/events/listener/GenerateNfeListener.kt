@@ -9,7 +9,7 @@ import java.util.*
 
 @Component
 class GenerateNfeListener(
-    val purchaseService: PurchaseService,
+    private val purchaseService: PurchaseService,
 ) {
     @Async
     @EventListener

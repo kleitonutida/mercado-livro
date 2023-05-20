@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class UpdateSoldBookListener(
-    val bookService: BookService,
+    private val bookService: BookService,
 ) {
     @Async
     @EventListener
