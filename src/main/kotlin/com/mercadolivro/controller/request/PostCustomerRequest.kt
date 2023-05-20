@@ -12,4 +12,7 @@ data class PostCustomerRequest(
     @field:Email(message = "{customer.email.is_valid}")
     @EmailAvailable(message = "{customer.email.not_available}")
     val email: String,
+
+    @field:NotEmpty(message = "{customer.password.is_empty}")
+    var password: String,
 )
