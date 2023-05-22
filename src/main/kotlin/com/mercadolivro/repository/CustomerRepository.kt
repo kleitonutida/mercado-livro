@@ -9,4 +9,5 @@ interface CustomerRepository : JpaRepository<CustomerModel, Int> {
 
     fun findByNameContaining(pageable: Pageable, name: String): Page<CustomerModel>
     fun existsByEmail(email: String): Boolean
+    fun findByEmail(email: String): CustomerModel?
 }

@@ -1,5 +1,7 @@
 package com.mercadolivro.config
 
+import com.mercadolivro.repository.CustomerRepository
+import com.mercadolivro.security.AuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -12,7 +14,9 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig() {
+class SecurityConfig(
+    private val customerRepository: CustomerRepository,
+) {
 
     private val PUBLIC_MATCHERS = arrayOf<String>()
 
@@ -41,6 +45,7 @@ class SecurityConfig() {
                     .anyRequest().authenticated()
             },
         )
+        http.addFilter(AuthenticationFilter(authenticationManager(), customerRepository))
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
         return http.build()
     }
