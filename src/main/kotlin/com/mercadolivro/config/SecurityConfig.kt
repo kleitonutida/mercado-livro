@@ -2,20 +2,27 @@ package com.mercadolivro.config
 
 import com.mercadolivro.repository.CustomerRepository
 import com.mercadolivro.security.AuthenticationFilter
+import com.mercadolivro.service.UserDetailCustomService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
+
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val customerRepository: CustomerRepository,
+    private val userDetails: UserDetailCustomService,
+    private val authConfiguration: AuthenticationConfiguration,
 ) {
 
     private val PUBLIC_MATCHERS = arrayOf<String>()
@@ -29,8 +36,12 @@ class SecurityConfig(
         return BCryptPasswordEncoder()
     }
 
+    fun configure(auth: AuthenticationManagerBuilder) {
+        auth.userDetailsService(userDetails).passwordEncoder(bCryptPasswordEncoder())
+    }
+
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun configure(http: HttpSecurity): SecurityFilterChain {
         http.cors().and().csrf().disable()
         http.authorizeHttpRequests(
             Customizer { requests ->
@@ -45,8 +56,13 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             },
         )
-        http.addFilter(AuthenticationFilter(authenticationManager(), customerRepository))
+        http.addFilter(AuthenticationFilter(authenticationManager(authConfiguration), customerRepository))
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
         return http.build()
+    }
+
+    @Bean
+    fun authenticationManager(authConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        return authConfiguration.authenticationManager
     }
 }
