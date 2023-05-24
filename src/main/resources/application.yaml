@@ -11,6 +11,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     default-property-inclusion: NON_NULL
+
+jwt:
+  secret: 4@39t1#bEgI6vH$n8oPmA^jF2*lD5uNc7wQzXyZsYxVwAiq%0n8uWm54eU~D3&9$7*j#Bh@I1Y2
+  expiration: 999999
+
 # DOC - https://springdoc.org/v2/#migrating-from-springfox
 springdoc:
   api-docs:
