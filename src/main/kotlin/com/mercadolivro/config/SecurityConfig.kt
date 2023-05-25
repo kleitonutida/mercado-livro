@@ -1,5 +1,6 @@
 package com.mercadolivro.config
 
+import com.mercadolivro.enums.Role
 import com.mercadolivro.repository.CustomerRepository
 import com.mercadolivro.security.AuthenticationFilter
 import com.mercadolivro.security.AuthorizationFilter
@@ -14,9 +15,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager
 
 
 @Configuration
@@ -34,6 +37,10 @@ class SecurityConfig(
         "/customers",
     )
 
+    private val ADMIN_MATCHERS = arrayOf(
+        "/admins/**",
+    )
+
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
@@ -46,22 +53,18 @@ class SecurityConfig(
     @Bean
     fun configure(http: HttpSecurity): SecurityFilterChain {
         http.cors().and().csrf().disable()
-        http.authorizeHttpRequests(
-            Customizer { requests ->
-                requests
-                    .requestMatchers(
-                        *PUBLIC_MATCHERS,
-                    ).permitAll()
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        *PUBLIC_POST_MATCHERS,
-                    ).permitAll()
-                    .anyRequest().authenticated()
-            },
-        )
-        http.addFilter(AuthenticationFilter(authenticationManager(authConfiguration), customerRepository, jwtUtil))
-        http.addFilter(AuthorizationFilter(authenticationManager(authConfiguration), userDetails, jwtUtil))
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
+            .authorizeHttpRequests(
+                Customizer { requests ->
+                    requests
+                        .requestMatchers(*PUBLIC_MATCHERS).permitAll()
+                        .requestMatchers(HttpMethod.POST, *PUBLIC_POST_MATCHERS).permitAll()
+                        .requestMatchers(*ADMIN_MATCHERS).hasAuthority(Role.ADMIN.description)
+                        .anyRequest().authenticated()
+                },
+            )
+            .addFilter(AuthenticationFilter(authenticationManager(authConfiguration), customerRepository, jwtUtil))
+            .addFilter(AuthorizationFilter(authenticationManager(authConfiguration), userDetails, jwtUtil))
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
         return http.build()
     }
 
