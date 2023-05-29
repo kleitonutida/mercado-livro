@@ -45,6 +45,13 @@ class SecurityConfig(
         "/admins/**",
     )
 
+    private val SWAGGER_MATCHERS = arrayOf(
+        "/swagger-ui.html",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/webjars/swagger-ui/**",
+    )
+
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
@@ -75,14 +82,7 @@ class SecurityConfig(
     @Bean
     fun configureWebSecurity(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web: WebSecurity ->
-            web.ignoring().requestMatchers(
-                "/v3/api-docs",
-                "/configuration/ui",
-                "/swagger-resources/**",
-                "/configuration/**",
-                "/swagger-ui/**",
-                "/webjars/**",
-            )
+            web.ignoring().requestMatchers(*SWAGGER_MATCHERS)
         }
     }
 
