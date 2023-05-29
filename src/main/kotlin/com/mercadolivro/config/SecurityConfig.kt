@@ -15,10 +15,15 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 
 @Configuration
 @EnableWebSecurity
@@ -45,12 +50,12 @@ class SecurityConfig(
         return BCryptPasswordEncoder()
     }
 
-    fun configure(auth: AuthenticationManagerBuilder) {
+    fun configureAuthenticationManager(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userDetails).passwordEncoder(bCryptPasswordEncoder())
     }
 
     @Bean
-    fun configure(http: HttpSecurity): SecurityFilterChain {
+    fun configureHttpSecurity(http: HttpSecurity): SecurityFilterChain {
         http.cors().and().csrf().disable()
             .authorizeHttpRequests(
                 Customizer { requests ->
@@ -65,6 +70,31 @@ class SecurityConfig(
             .addFilter(AuthorizationFilter(authenticationManager(authConfiguration), userDetails, jwtUtil))
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
         return http.build()
+    }
+
+    @Bean
+    fun configureWebSecurity(): WebSecurityCustomizer {
+        return WebSecurityCustomizer { web: WebSecurity ->
+            web.ignoring().requestMatchers(
+                "/v3/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/**",
+                "/swagger-ui/**",
+                "/webjars/**",
+            )
+        }
+    }
+
+    @Bean
+    fun corsConfig(): CorsFilter {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+        config.allowCredentials = true
+        config.addAllowedOrigin("*")
+        config.addAllowedMethod("*")
+        source.registerCorsConfiguration("/**", config)
+        return CorsFilter(source)
     }
 
     @Bean
