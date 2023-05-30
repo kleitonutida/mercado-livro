@@ -4,6 +4,7 @@ import com.mercadolivro.enums.Role
 import com.mercadolivro.repository.CustomerRepository
 import com.mercadolivro.security.AuthenticationFilter
 import com.mercadolivro.security.AuthorizationFilter
+import com.mercadolivro.security.CustomAuthenticationEntryPoint
 import com.mercadolivro.security.JwtUtil
 import com.mercadolivro.service.UserDetailCustomService
 import org.springframework.context.annotation.Bean
@@ -33,6 +34,7 @@ class SecurityConfig(
     private val userDetails: UserDetailCustomService,
     private val jwtUtil: JwtUtil,
     private val authConfiguration: AuthenticationConfiguration,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
 ) {
 
     private val PUBLIC_MATCHERS = arrayOf<String>()
@@ -76,6 +78,7 @@ class SecurityConfig(
             .addFilter(AuthenticationFilter(authenticationManager(authConfiguration), customerRepository, jwtUtil))
             .addFilter(AuthorizationFilter(authenticationManager(authConfiguration), userDetails, jwtUtil))
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // As sessões são independentes
+            .and().exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
         return http.build()
     }
 
