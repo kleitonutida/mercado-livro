@@ -39,6 +39,10 @@ class SecurityConfig(
 
     private val PUBLIC_MATCHERS = arrayOf<String>()
 
+    private val PUBLIC_GET_MATCHERS = arrayOf(
+        "/books",
+    )
+
     private val PUBLIC_POST_MATCHERS = arrayOf(
         "/customers",
     )
@@ -70,6 +74,7 @@ class SecurityConfig(
                 Customizer { requests ->
                     requests
                         .requestMatchers(*PUBLIC_MATCHERS).permitAll()
+                        .requestMatchers(HttpMethod.GET, *PUBLIC_GET_MATCHERS).permitAll()
                         .requestMatchers(HttpMethod.POST, *PUBLIC_POST_MATCHERS).permitAll()
                         .requestMatchers(*ADMIN_MATCHERS).hasAuthority(Role.ADMIN.description)
                         .anyRequest().authenticated()
@@ -94,7 +99,7 @@ class SecurityConfig(
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration()
         config.allowCredentials = true
-        config.addAllowedOrigin("*")
+        config.addAllowedOriginPattern("*")
         config.addAllowedMethod("*")
         source.registerCorsConfiguration("/**", config)
         return CorsFilter(source)
