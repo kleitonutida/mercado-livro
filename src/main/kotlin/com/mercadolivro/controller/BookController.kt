@@ -3,13 +3,14 @@ package com.mercadolivro.controller
 import com.mercadolivro.controller.request.PostBookRequest
 import com.mercadolivro.controller.request.PutBookRequest
 import com.mercadolivro.controller.response.BookResponse
+import com.mercadolivro.controller.response.PageResponse
 import com.mercadolivro.enums.BookStatus
 import com.mercadolivro.extension.toBookModel
+import com.mercadolivro.extension.toPageResponse
 import com.mercadolivro.extension.toResponse
 import com.mercadolivro.service.BookService
 import com.mercadolivro.service.CustomerService
 import jakarta.validation.Valid
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
@@ -33,14 +34,16 @@ class BookController(
     }
 
     @GetMapping
-    fun findAll(@PageableDefault(page = 0, size = 10) pageable: Pageable): Page<BookResponse> =
+    fun findAll(@PageableDefault(page = 0, size = 10) pageable: Pageable): PageResponse<BookResponse> =
         bookService.findAll(pageable)
             .map { it.toResponse() }
+            .toPageResponse()
 
     @GetMapping("/actives")
-    fun findActivies(@PageableDefault(page = 0, size = 10) pageable: Pageable): Page<BookResponse> =
+    fun findActivies(@PageableDefault(page = 0, size = 10) pageable: Pageable): PageResponse<BookResponse> =
         bookService.findByActivies(pageable)
             .map { it.toResponse() }
+            .toPageResponse()
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Int): BookResponse =
@@ -63,8 +66,10 @@ class BookController(
     fun getCustomerBooks(
         @PageableDefault(page = 0, size = 10) pageable: Pageable,
         @PathVariable id: Int,
-    ): Page<BookResponse> =
-        bookService.findByCustomerId(id, pageable).map { it.toResponse() }
+    ): PageResponse<BookResponse> =
+        bookService.findByCustomerId(id, pageable)
+            .map { it.toResponse() }
+            .toPageResponse()
 
     @GetMapping("/customer/{id}/{status}")
     fun getCustomerBooksByStatus(
@@ -72,6 +77,8 @@ class BookController(
         @PathVariable id: Int,
         @PathVariable
         status: BookStatus,
-    ): Page<BookResponse> =
-        bookService.findByCustomerIdAndBookStatus(pageable, id, status).map { it.toResponse() }
+    ): PageResponse<BookResponse> =
+        bookService.findByCustomerIdAndBookStatus(pageable, id, status)
+            .map { it.toResponse() }
+            .toPageResponse()
 }

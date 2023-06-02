@@ -16,7 +16,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2IiwiZXhwIjoxNjg0OTkwMjA4fQ.1DWbj5OFs-xfJEDW07U3pkfAU-UsnCbTuMDBLIFv2_UFDdEtuUP2uXuZ8TnAyj4EZuSGlOzBIOMCxh9rUyqB_A",
+								"value": "{{TOKEN}}",
 								"type": "text"
 							}
 						],
@@ -191,9 +191,15 @@
 					"name": "Books By Id",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8080/books/10",
+							"raw": "http://localhost:8080/books/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -201,7 +207,7 @@
 							"port": "8080",
 							"path": [
 								"books",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -211,7 +217,13 @@
 					"name": "Books | Actives",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/actives?size=2",
 							"protocol": "http",
@@ -323,7 +335,13 @@
 					"name": "Books By Customer Id",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/customer/1",
 							"protocol": "http",
@@ -351,7 +369,13 @@
 					"name": "Books By Customer Id And Status",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:8080/books/customer/1/ativo",
 							"protocol": "http",
@@ -433,7 +457,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"email5@email.com\",\r\n    \"password\": 123456\r\n}",
+							"raw": "{\r\n    \"email\": \"email4@email.com\",\r\n    \"password\": 123456\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
