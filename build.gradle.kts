@@ -17,6 +17,8 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -38,7 +40,8 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation(kotlin("stdlib-jdk8"))
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("io.github.glytching:junit-extensions:2.6.0")
 }
 
 tasks.withType<KotlinCompile> {
