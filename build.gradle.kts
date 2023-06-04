@@ -43,6 +43,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("io.github.glytching:junit-extensions:2.6.0")
+    testImplementation("com.querydsl:querydsl-jpa:5.0.0")
 }
 
 tasks.withType<KotlinCompile> {
