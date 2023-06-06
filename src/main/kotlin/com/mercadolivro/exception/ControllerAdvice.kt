@@ -79,6 +79,6 @@ class ControllerAdvice {
             internalCode = ML000.code,
             null,
         )
-        return ResponseEntity(error, BAD_REQUEST)
+        return ResponseEntity(error, FORBIDDEN)
     }
 }
