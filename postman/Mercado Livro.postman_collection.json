@@ -490,7 +490,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2IiwiZXhwIjoxNjg0OTkxMjI2fQ.T7Ad7m30U62TczhxKak0PeNOtjLR0jGqwnwjzHSBgDfD9DFD7YeQSmwwZHpFhTOdbUInm6bf2VImoHz2qw884g",
+								"value": "{{TOKEN}}",
 								"type": "text"
 							}
 						],
