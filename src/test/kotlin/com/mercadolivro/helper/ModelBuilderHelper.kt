@@ -5,6 +5,7 @@ import com.mercadolivro.enums.Role
 import com.mercadolivro.model.BookModel
 import com.mercadolivro.model.CustomerModel
 import com.mercadolivro.model.PurchaseModel
+import com.mercadolivro.security.UserCustomDetails
 import java.math.BigDecimal
 import java.util.*
 
@@ -35,3 +36,6 @@ fun buildPurchase(
     nfe = nfe,
     price = price,
 )
+
+fun buildUserDetails(customerModel: CustomerModel) =
+    UserCustomDetails(customerModel = customerModel)
