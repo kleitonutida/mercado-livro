@@ -37,9 +37,11 @@ class BookServiceTest {
     @SpyK
     private lateinit var bookService: BookService
 
-    val bookModelSlot = slot<BookModel>()
+    val bookSlotDelete = slot<BookModel>()
 
-    val booksModelSlot = slot<List<BookModel>>()
+    val booksSlotDeleteByCustomer = slot<List<BookModel>>()
+
+    val bookSlotPurchase = slot<List<BookModel>>()
 
     @Test
     fun `when create should create a book`() {
@@ -121,10 +123,10 @@ class BookServiceTest {
         bookService.delete(id)
 
         verify(exactly = 1) { bookService.findById(id) }
-        verify(exactly = 1) { bookService.update(capture(bookModelSlot)) }
+        verify(exactly = 1) { bookService.update(capture(bookSlotDelete)) }
 
-        assertTrue(bookModelSlot.isCaptured)
-        assertEquals(expectedBook.status, bookModelSlot.captured.status)
+        assertTrue(bookSlotDelete.isCaptured)
+        assertEquals(expectedBook.status, bookSlotDelete.captured.status)
     }
 
     @Test
@@ -149,10 +151,10 @@ class BookServiceTest {
         bookService.deleteByCustomer(customer)
 
         verify(exactly = 1) { bookRepository.findByCustomer(customer) }
-        verify(exactly = 1) { bookRepository.saveAll(capture(booksModelSlot)) }
+        verify(exactly = 1) { bookRepository.saveAll(capture(booksSlotDeleteByCustomer)) }
 
-        assertTrue(booksModelSlot.isCaptured)
-        booksModelSlot.captured.map {
+        assertTrue(booksSlotDeleteByCustomer.isCaptured)
+        booksSlotDeleteByCustomer.captured.map {
             assertEquals(BookStatus.DELETADO, it.status)
         }
     }
@@ -169,5 +171,127 @@ class BookServiceTest {
 
         assertEquals(books, actualBooks)
         verify(exactly = 1) { bookRepository.findAllById(ids) }
+    }
+
+    @Test
+    fun `when purchase should update book status to sold`() {
+        val books = mutableListOf(buildBook(), buildBook())
+        val expectedBooks = books.map {
+            val book = it.copy()
+            book.status = BookStatus.VENDIDO
+            book
+        }.toCollection(mutableListOf())
+
+        every { bookRepository.saveAll(expectedBooks) } returns expectedBooks
+
+        bookService.purchase(books)
+
+        verify(exactly = 1) { bookRepository.saveAll(capture(bookSlotPurchase)) }
+
+        assertTrue(bookSlotPurchase.isCaptured)
+        bookSlotPurchase.captured.map {
+            assertEquals(BookStatus.VENDIDO, it.status)
+        }
+    }
+
+    @Test
+    fun `when booksAvaiable should return true`(
+        @Random ids: Set<Int>,
+    ) {
+        val books = listOf(buildBook(), buildBook())
+
+        every { bookService.findAllByIds(ids) } returns books
+
+        val available = bookService.booksAvailable(ids)
+
+        assertTrue(available)
+    }
+
+    @Test
+    fun `when booksAvaiable should return false`(
+        @Random ids: Set<Int>,
+    ) {
+        val books = listOf(buildBook(status = BookStatus.VENDIDO), buildBook(status = BookStatus.CANCELADO))
+
+        every { bookService.findAllByIds(ids) } returns books
+
+        val available = bookService.booksAvailable(ids)
+
+        assertFalse(available)
+    }
+
+    @Test
+    fun `when findByCustomer should return books`(
+        @Random id: Int,
+        @Random pageable: Pageable,
+    ) {
+        val customer = buildCustomer()
+        val expectedBooks = PageImpl(listOf(buildBook(), buildBook()))
+
+        every { customerRepository.findById(id) } returns Optional.of(customer)
+        every { bookRepository.findByCustomer(customer, pageable) } returns expectedBooks
+
+        val actualBooks = bookService.findByCustomerId(id, pageable)
+
+        assertEquals(expectedBooks, actualBooks)
+        verify(exactly = 1) { customerRepository.findById(id) }
+        verify(exactly = 1) { bookRepository.findByCustomer(customer, pageable) }
+    }
+
+    @Test
+    fun `when findByCustomer should return customer not found`(
+        @Random pageable: Pageable,
+        @Random id: Int,
+    ) {
+        val customer = buildCustomer()
+
+        every { customerRepository.findById(id) } returns Optional.empty()
+
+        val error = assertThrows<NotFoundException> { bookService.findByCustomerId(id, pageable) }
+
+        verify(exactly = 1) { customerRepository.findById(id) }
+        verify(exactly = 0) { bookRepository.findByCustomer(customer, pageable) }
+
+        assertEquals("ML-201", error.errorCode)
+        assertEquals("Customer [$id] not exists", error.message)
+    }
+
+    @Test
+    fun `when findByCustomerIdAndBookStatus should return books`(
+        @Random pageable: Pageable,
+        @Random bookStatus: BookStatus,
+        @Random id: Int,
+    ) {
+        val customer = buildCustomer()
+        val expectedBooks = PageImpl(listOf(buildBook(), buildBook()))
+
+        every { customerRepository.findById(id) } returns Optional.of(customer)
+        every { bookRepository.findByCustomerAndStatus(customer, bookStatus, pageable) } returns expectedBooks
+
+        val actualBooks = bookService.findByCustomerIdAndBookStatus(pageable, id, bookStatus)
+
+        assertEquals(expectedBooks, actualBooks)
+        verify(exactly = 1) { customerRepository.findById(id) }
+        verify(exactly = 1) { bookRepository.findByCustomerAndStatus(customer, bookStatus, pageable) }
+    }
+
+    @Test
+    fun `when findByCustomerIdAndBookStatus should return customer not found`(
+        @Random pageable: Pageable,
+        @Random bookStatus: BookStatus,
+        @Random id: Int,
+    ) {
+        val customer = buildCustomer()
+
+        every { customerRepository.findById(id) } returns Optional.empty()
+
+        val error =
+            assertThrows<NotFoundException> { bookService.findByCustomerIdAndBookStatus(pageable, id, bookStatus) }
+
+        verify(exactly = 1) { customerRepository.findById(id) }
+        verify(exactly = 0) { bookRepository.findByCustomerAndStatus(customer, bookStatus, pageable) }
+
+        assertEquals("ML-201", error.errorCode)
+        assertEquals("Customer [$id] not exists", error.message)
     }
 }
