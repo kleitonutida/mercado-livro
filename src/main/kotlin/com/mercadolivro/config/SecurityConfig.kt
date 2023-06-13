@@ -48,7 +48,7 @@ class SecurityConfig(
     )
 
     private val ADMIN_MATCHERS = arrayOf(
-        "/admins/**",
+        "/admin/**",
     )
 
     private val SWAGGER_MATCHERS = arrayOf(
